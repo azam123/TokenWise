@@ -1,6 +1,7 @@
 """Budget validation utilities."""
 
 from dataclasses import dataclass
+from typing import List, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -8,18 +9,18 @@ class BudgetResult:
     """Describes whether a token or cost budget was exceeded."""
 
     within_budget: bool
-    token_limit: int | None
-    cost_limit: float | None
+    token_limit: Optional[int]
+    cost_limit: Optional[float]
     actual_tokens: int
     actual_cost: float
-    reasons: tuple[str, ...]
+    reasons: Tuple[str, ...]
 
 
 def check_budget(
     actual_tokens: int,
     actual_cost: float,
-    token_limit: int | None = None,
-    cost_limit: float | None = None,
+    token_limit: Optional[int] = None,
+    cost_limit: Optional[float] = None,
 ) -> BudgetResult:
     """Check actual usage against optional token and cost limits.
 
@@ -33,7 +34,7 @@ def check_budget(
     if cost_limit is not None and cost_limit < 0:
         raise ValueError("cost_limit cannot be negative")
 
-    reasons: list[str] = []
+    reasons: List[str] = []
 
     if token_limit is not None and actual_tokens > token_limit:
         reasons.append("token limit exceeded")
